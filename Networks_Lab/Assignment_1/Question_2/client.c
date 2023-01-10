@@ -54,6 +54,7 @@ int main()
 
     do
     {
+        printf("Enter an equation(or -1 to exit):");
         char *result = readinput();
         int sodhi= sizeof(result);
         // printf("%d\n", sodhi);
