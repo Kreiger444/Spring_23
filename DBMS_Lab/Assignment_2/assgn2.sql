@@ -469,7 +469,7 @@ HAVING COUNT(*) >= 2
 SELECT p.name AS patient_name, ph.name AS physician_name
 FROM prescribes pr
 JOIN patient p ON pr.patient = p.SSN
-JOIN physician ph ON pr.physician = ph.EmployeeID
+JOIN physician ph ON p.PCP = ph.EmployeeID
 JOIN patient_procedure pp ON p.SSN = pp.patient
 JOIN patient_appointments pa ON p.SSN = pa.patient
 WHERE ph.EmployeeID NOT IN (
