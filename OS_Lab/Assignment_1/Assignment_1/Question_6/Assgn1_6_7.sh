@@ -1,4 +1,4 @@
-while read n; do
+while read n || [[ "$n" ]]; do
   for ((i=2;i<=n;i++)); do arr[i]=$i; done;
   for ((i=2;i<=n;i++)); do
     if [[ ${arr[i]} -ne 0 ]]; then
