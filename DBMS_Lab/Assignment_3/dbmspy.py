@@ -10,7 +10,7 @@ parameters = {
     'host': '10.5.18.70',
     'port': 3306
 }
-chintu
+
 connection = mysql.connector.connect(**parameters)
 curs=connection.cursor()
 Queries = {
