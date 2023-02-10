@@ -20,7 +20,7 @@ employeeid int not null primary key,
 name varchar(255),
 position varchar(255),
 registered boolean not null,
-ssn int not null,
+ssn int not null
 );
 
 
@@ -84,7 +84,7 @@ stayid int not null primary key,
 patient int not null references patient(ssn),
 room int not null references room(number),
 start timestamp not null,
-"end" timestamp not null
+end timestamp not null
 );
 
 
@@ -103,9 +103,9 @@ nurse int not null references nurse(employeeid),
 blockfloor int not null,
 blockcode int not null,
 start timestamp not null,
-"end" timestamp not null,
+end timestamp not null,
 foreign key (blockfloor, blockcode) references block(floor, code),
-primary key (nurse, blockfloor, blockcode, start, "end")
+primary key (nurse, blockfloor, blockcode, start, end)
 );
 
 
@@ -115,7 +115,7 @@ patient int not null references patient(ssn),
 prepnurse int references nurse(employeeid),
 physician int not null references physician(employeeid),
 start timestamp not null,
-"end" timestamp not null,
+end timestamp not null,
 examinationroom varchar(255)
 );
 
@@ -154,9 +154,9 @@ values
 insert into
 nurse (employeeid, name, position, registered, ssn)
 values
-(6, 'jaques', 'registered nurse', true, 7),
-(7, 'xavier', 'nurse practitioner', false, 8),
-(8, 'stella', 'icu registered nurse', true, 9);
+(6, 'jaques', 'registered nurse', 1, 7),
+(7, 'xavier', 'nurse practitioner', 0, 8),
+(8, 'stella', 'icu registered nurse', 1, 9);
 
 insert into
 medication (code, name, brand, description)
@@ -226,12 +226,12 @@ values
 insert into
 affiliated_with (physician, department, primaryaffiliation)
 values
-(1, 1, true),
-(2, 2, true),
-(3, 3, true),
-(4, 1, true),
-(5, 2, true),
-(9, 2, true);
+(1, 1, 1),
+(2, 2, 1),
+(3, 3, 1),
+(4, 1, 1),
+(5, 2, 1),
+(9, 2, 1);
 
 insert into
 trained_in (
@@ -250,14 +250,14 @@ values
 insert into
 room (number, type, blockfloor, blockcode, unavailable)
 values
-(121, 'icu', 1, 1, false),
-(122, 'operation theatre', 1, 2, false),
-(123, 'multibed ward', 2, 1, false),
-(124, 'single room', 2, 1, false),
-(125, 'single room', 3, 1, true);
+(121, 'icu', 1, 1, 0),
+(122, 'operation theatre', 1, 2, 0),
+(123, 'multibed ward', 2, 1, 0),
+(124, 'single room', 2, 1, 0),
+(125, 'single room', 3, 1, 1);
 
 insert into
-stay (stayid, patient, room, start, "end")
+stay (stayid, patient, room, start, end)
 values
 (1, 10, 124, '2023-01-31', '2023-02-04'),
 (
@@ -283,7 +283,7 @@ values
 (11, 3, 2, '2023-02-06', 3, 8);
 
 insert into
-on_call (nurse, blockfloor, blockcode, start, "end")
+on_call (nurse, blockfloor, blockcode, start, end)
 values
 (6, 2, 1, '2023-01-27', '2023-01-31'),
 (7, 3, 1, '2023-01-30', '2023-02-01'),
@@ -297,7 +297,7 @@ patient,
 prepnurse,
 physician,
 start,
-"end",
+end,
 examinationroom
 )
 values
@@ -393,7 +393,7 @@ select p.name, p.insuranceid
 from patient p
 join room as r on r.type = 'icu'
 join stay as st on st.room=r.number and st.patient=p.ssn
-where st."end"-st.start >= interval '15 days';
+where st.end-st.start >= interval '15 days';
 
 --query 6
 
