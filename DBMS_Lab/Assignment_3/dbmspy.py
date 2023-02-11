@@ -2,7 +2,7 @@ import mysql.connector
 from prettytable import PrettyTable
 
 
-
+#setting parameters
 parameters = {
     'database': '20CS10075',
     'user': '20CS10075',
@@ -10,9 +10,10 @@ parameters = {
     'host': '10.5.18.70',
     'port': 3306
 }
-
+#connecting to the database
 connection = mysql.connector.connect(**parameters)
 curs=connection.cursor()
+#storing queries
 Queries = {
     1: '''select p.name
         from physician as p
@@ -121,24 +122,31 @@ Queries = {
 }
 
 while True:
+    #fetching input from the user
     try:
         querynum = int(input("Enter a Query number or enter -1 to exit: "))
+    #invalid input
     except ValueError:
         print("Invalid input", end='\n')
         continue
+    #break condition
     if querynum == -1:
         break
+    #Invalid query number
     elif querynum > 13 or querynum < 1:
         print("Invalid Query number", end='\n')
         continue
+    #Query 13 -- taking input from the user as procedure and adding it to the query
     elif querynum==13:
         procedure= input("Enter Procedure: ")
         Query=Queries[querynum].format(procedure.lower())
+    #other queries
     else:
         Query=Queries[querynum]
-
+    #execution of the queries
     curs.execute(Query)
     column=[]
+    #Creating the table using prettytable lib in python
     for sample in curs.description:
         column.append(sample[0])
     
@@ -147,5 +155,6 @@ while True:
     for flag in rows:
         table.add_row(flag)
     print(table) 
+#closing connection
 curs.close()
 connection.close()

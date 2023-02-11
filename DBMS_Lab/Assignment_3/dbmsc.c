@@ -31,6 +31,7 @@ int main(){
     queries[11]="with patient_medication as ( select medication, count(*) as total_prescriptions from prescribes group by medication ) select m.name, m.brand from patient_medication pm join medication m on pm.medication = m.code order by total_prescriptions desc limit 1;";
     queries[12]="select p.name from physician as p join trained_in as t on t.physician=p.employeeid join procedures as pr on pr.code=t.treatment where pr.name= '";
 
+//establishing connection
     connection=mysql_init(NULL);
     
     MYSQL *status=mysql_real_connect(connection, server, username, password, database, port, NULL, 0);
@@ -42,22 +43,26 @@ int main(){
         int querynum;
         int columns;
         int rows;
+        //taking input for query number from user
         printf("Enter a Query number from 1-13 or enter -1 to exit: ");
         scanf("%d", &querynum);
         printf("\n");
-
+        //exit condition
         if(querynum==-1){
             break;
         }
+        //invalid query number given
         else if(querynum<1 || querynum>13){
             printf("Invalid Query number\n");
             continue;
         }
+        
         else{
+            //query number 13 --- must take input from user as procedure
             if(querynum==13){
                 char procedure[50];
                 char *newquery;
-
+                //taking input from user and appending '; to make it a proper sql query
                 printf("Enter the procedure's name: ");
                 getchar();
                 fgets(procedure, 50, stdin);
@@ -72,6 +77,7 @@ int main(){
                 strcat(newquery, procedure);
 
                 newquery[strlen(newquery)-1]='\0';
+                //checking if the query is correct or not
                 int flag=mysql_query(connection, newquery);
                 if(flag!=0){
                     perror("could not run query");
@@ -80,6 +86,7 @@ int main(){
                 free(newquery);
             }
             else{
+                //checking if the query is correct or not
                 int flag= mysql_query(connection, queries[querynum-1]);
                 if(flag!=0){
                     perror("could not run query");
@@ -87,15 +94,18 @@ int main(){
                 }
             }
         }
+        //storing result in answer
         answer=mysql_store_result(connection);
 
         columns=mysql_num_fields(answer);
         MYSQL_FIELD *fields=mysql_fetch_fields(answer);
         rows=mysql_num_rows(answer);
+        //prints empty set if there are no matching entries
         if(rows==0){
             printf("Empty set\n");
             continue;
         }
+        //calculating max lengths of each field to format the table
         int *lengths=(int*)malloc(columns*sizeof(int));
         for(int i=0; i<columns; i++){
             lengths[i]=0;
@@ -106,7 +116,13 @@ int main(){
                 lengths[i]=temp;
             }
         }
+        //creating a new array to store rows
+        MYSQL_ROW *newrow;
+        newrow=(MYSQL_ROW*)malloc(rows*sizeof(MYSQL_ROW));
+        int j=0;
         while((row=mysql_fetch_row(answer))!=NULL){
+            newrow[j]=row;
+            j++;
             for(int i=0; i<columns; i++){
                 int temp=strlen(row[i]);
                 if(temp>lengths[i]){
@@ -114,18 +130,18 @@ int main(){
                 }
             }
         }
+        //printing into the table
         printf("||");
         for(int i=0; i< columns; i++){
             printf(" %-*s ||", lengths[i], fields[i].name);
 
         }
         printf("\n");
-
-        mysql_data_seek(answer,0);
-        while((row=mysql_fetch_row(answer))){
+        //
+        for(int i=0; i<rows; i++){
             printf("||");
-            for(int i=0; i<columns; i++){
-                printf(" %-*s ||", lengths[i], row[i]);
+            for(int j=0; j<columns; j++){
+                printf(" %-*s ||", lengths[j], newrow[i][j]);
             }
             printf("\n");
         }
