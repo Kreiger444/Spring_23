@@ -393,7 +393,7 @@ select p.name, p.insuranceid
 from patient p
 join room as r on r.type = 'icu'
 join stay as st on st.room=r.number and st.patient=p.ssn
-where st.end-st.start >= interval '15 days';
+where timestampdiff(DAY,st.end, st.start) >=  15;
 
 --query 6
 
@@ -436,12 +436,12 @@ select p.name as physician_name,
 select pr.name as procedures
 from procedures as pr
 where pr.code=ug.procedures
-),
+) as `procedure`,
 ug.date, (
 select pt.name as patient_name
 from patient as pt
 where pt.ssn=ug.patient
-)
+) as finger
 from physician as p
 join trained_in ti on ti.physician=p.employeeid
 join undergoes ug on ug.physician=p.employeeid and ug.date>ti.certificationexpires
